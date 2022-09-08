@@ -33,14 +33,20 @@ const RegisterUser = () => {
                         <label>Enter Username</label>
                         <input type="text" value={data.username} name="username" onChange={handleUpdateField} />
                     </Col>
+                </Row>
+                <Row>
                     <Col>
                         <label>Enter Password</label>
                         <input type="password" value={data.password} name="password" onChange={handleUpdateField} />
                     </Col>
+                </Row>
+                <Row>
                     <Col>
                         <label>Confirm Password</label>
                         <input type="password" value={data.confirmPassword} name="confirmPassword" onChange={handleUpdateField} />
                     </Col>
+                </Row>
+                <Row>
                     <Col>
                         <button type="submit">Register</button>
                     </Col>
