@@ -1,19 +1,25 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { addDoc, collection } from "firebase/firestore";
-import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useEffect, useState } from "react";
 import Col from "react-bootstrap/esm/Col";
 import Container from "react-bootstrap/esm/Container";
 import Row from "react-bootstrap/esm/Row";
-import { Link } from "react-router-dom";
-import { auth, db } from "../../firebaseConfig";
+import { auth } from "../../firebaseConfig";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom";
 
-const RegisterUser = () => {
+const SignIn = () => {
 
     const [data, setData] = useState({
         username: '',
         password: '',
-        confirmPassword: ''
     });
+    const [user, loading, error] = useAuthState(auth);
+
+    useEffect(() => {
+        if (user) navigate('/cart')
+    })
+
+    const navigate = useNavigate();
 
     const handleUpdateField = e => {
         setData({
@@ -23,19 +29,13 @@ const RegisterUser = () => {
     }
 
     const handleOnSubmit = async (e) => {
-        e.preventDefault();
         try {
-            const res = await createUserWithEmailAndPassword(auth, data.username, data.password);
-            const user = res.user;
-            await addDoc(collection(db, "users"), {
-                uid: user.uid,
-                authProvider: "local",
-                email: data.username
-            });
+            await signInWithEmailAndPassword(auth, data.username, data.password)
         } catch (err) {
             console.error(err);
             alert(err.message);
-        } console.log(data);
+        }
+        e.preventDefault();
     }
 
     return (
@@ -55,18 +55,7 @@ const RegisterUser = () => {
                 </Row>
                 <Row>
                     <Col>
-                        <label>Confirm Password</label>
-                        <input type="password" value={data.confirmPassword} name="confirmPassword" onChange={handleUpdateField} />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <button type="submit">Register</button>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <Link to="signin">Already a member? Sign in now</Link>
+                        <button type="submit">Sign In</button>
                     </Col>
                 </Row>
             </Container>
@@ -74,4 +63,4 @@ const RegisterUser = () => {
     )
 }
 
-export default RegisterUser;
+export default SignIn;
