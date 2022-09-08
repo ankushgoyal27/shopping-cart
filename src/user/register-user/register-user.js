@@ -18,8 +18,9 @@ const RegisterUser = () => {
         })
     }
 
-    const handleOnSubmit = () => {
+    const handleOnSubmit = e => {
         console.log(data);
+        e.preventDefault();
     }
 
     return (
