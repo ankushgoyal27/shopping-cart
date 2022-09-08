@@ -14,7 +14,8 @@ const AddItem = (props) => {
         unit: '',
         pricePerUnit: '',
         date: new Date(),
-        addedBy: ''
+        addedBy: '',
+        brand:''
     });
 
     const updateField = e => {
@@ -38,7 +39,8 @@ const AddItem = (props) => {
             unit: '',
             pricePerUnit: '',
             date: new Date(),
-            addedBy: ''
+            addedBy: '',
+            brand:''
         });
     }
 
