@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { collection, addDoc, query, onSnapshot } from 'firebase/firestore';
 import AddStore from "./add-store/add-store";
 import ViewStore from "./view-store/view-store";
-import { db } from "../../../firebaseConfig";
+import { db } from "../../firebaseConfig";
 
 const StoreList = props => {
 

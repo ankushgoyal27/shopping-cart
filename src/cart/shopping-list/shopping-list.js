@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import AddItem from "./add-item/add-item";
 import ListItem from "./item-list/item-list";
 import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from "../../../firebaseConfig";
+import { db } from "../../firebaseConfig";
 
 const ShoppingList = props => {
 
