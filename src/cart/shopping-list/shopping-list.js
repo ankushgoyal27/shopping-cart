@@ -7,6 +7,8 @@ import { db } from "../../firebaseConfig";
 const ShoppingList = props => {
 
     const [storeData, setStoreData] = useState([]);
+    const [status, setStatus] = useState(true);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -22,9 +24,10 @@ const ShoppingList = props => {
                 console.log("No such document!");
             }
         }
-
-        fetchData();
-    }, []);
+        if (status) {
+            fetchData();
+        }
+    }, [props.itemList.id, status]);
 
     const addItemInList = async (item) => {
         try {
@@ -48,13 +51,15 @@ const ShoppingList = props => {
 
     const deleteItemFromList = async (index) => {
         try {
-
+            setStatus(false);
             const data = storeData.desired[index];
             const docRef = doc(db, "cart", props.itemList.id);
             await updateDoc(docRef, {
 
                 "desired": arrayRemove(data)
 
+            }).then(() => {
+                setStatus(true);
             })
         } catch (err) {
             console.log(err)
