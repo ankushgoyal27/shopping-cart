@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, query, onSnapshot, doc, runTransaction, where, documentId } from 'firebase/firestore';
+import { collection, query, onSnapshot, doc, runTransaction, where, documentId, getDoc } from 'firebase/firestore';
 import AddStore from "./add-store/add-store";
 import ViewStore from "./view-store/view-store";
 import { auth, db } from "../../firebaseConfig";
@@ -9,29 +9,41 @@ const StoreList = props => {
 
     const [storeList, setStoreList] = useState([]);
     const [user] = useAuthState(auth);
+    const [status, setStatus] = useState(true);
 
     useEffect(() => {
-        //if (user?.stores) {
-        const q = query(collection(db, 'stores'),
-            where(documentId(), "in", ["WQzLSIVVfSItBIARFQbU", "AFdvE1AF27Zj0VTjoR1r"]))
-        onSnapshot(q, (querySnapshot) => {
-            setStoreList(querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                data: doc.data()
-            })))
-        })
-        //}
-    }, [])
+        const fetchStoreData = async () => {
+            if (user?.email) {
+                const userStoreRef = doc(db, "userStores", user?.email);
+                const userStoreDoc = await getDoc(userStoreRef);
+
+                if (userStoreDoc.data()?.ids.length) {
+                    const q = query(collection(db, 'stores'),
+                        where(documentId(), "in", userStoreDoc.data()?.ids))
+                    onSnapshot(q, (querySnapshot) => {
+                        setStoreList(querySnapshot.docs.map(doc => ({
+                            id: doc.id,
+                            data: doc.data()
+                        })))
+                    })
+                }
+            }
+        }
+        if (status) {
+            fetchStoreData();
+        }
+    }, [user, status])
 
     const handleAddNewStore = async (name) => {
         try {
+            setStatus(false);
             await runTransaction(db, async (transaction) => {
                 const userStoresRef = doc(db, "userStores", user.email);
                 const userStoresInfo = await transaction.get(userStoresRef);
 
                 let userStores = [];
-                if (userStoresInfo?.ids) {
-                    userStores = userStoresInfo?.ids;
+                if (userStoresInfo.data()?.ids.length) {
+                    userStores = userStoresInfo.data()?.ids;
                 }
                 console.log(userStores);
 
@@ -47,7 +59,7 @@ const StoreList = props => {
                 await transaction.update(userStoresRef, {
                     "ids": userStores
                 })
-
+                setStatus(true);
             })
         } catch (err) {
             console.log(err)
