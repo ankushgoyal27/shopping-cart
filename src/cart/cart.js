@@ -19,8 +19,12 @@ const Cart = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!user) navigate('/signin');
-    })
+        if (user) {
+            console.log(JSON.stringify(user.uid))
+        } else {
+            navigate('/signin')
+        };
+    }, [user, navigate])
 
     const handleLogout = () => {
         signOut(auth);

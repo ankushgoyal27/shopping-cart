@@ -1,35 +1,74 @@
 import { useEffect, useState } from "react";
-import { collection, addDoc, query, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, query, onSnapshot, doc, runTransaction, where, getDocs, getDoc, documentId } from 'firebase/firestore';
 import AddStore from "./add-store/add-store";
 import ViewStore from "./view-store/view-store";
-import { db } from "../../firebaseConfig";
+import { auth, db } from "../../firebaseConfig";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const StoreList = props => {
 
     const [storeList, setStoreList] = useState([]);
+    const [user, loading, error] = useAuthState(auth);
 
     useEffect(() => {
-        console.log("useEffect")
-        const q = query(collection(db, 'cart'))
+        //if (user?.stores) {
+        const q = query(collection(db, 'cart'),
+            where(documentId(), "in", ["WQzLSIVVfSItBIARFQbU", "AFdvE1AF27Zj0VTjoR1r"]))
         onSnapshot(q, (querySnapshot) => {
             setStoreList(querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 data: doc.data()
             })))
         })
+        //}
     }, [])
 
-    const addNewStore = async (name) => {
+    const handleAddNewStore = async (name) => {
+
+
+        //const userDocRef = doc(db, "user", user.uid);
         try {
-            console.log(name);
-            await addDoc(collection(db, 'cart'), {
-                "storeName": name,
-                "desired": []
+            const newStore = await runTransaction(db, async (transaction) => {
+                //const userDoc = await transaction.get(userDocRef);
+                const userDocRef = doc(db, "users", user.uid);
+                const userInfo = await transaction.get(userDocRef);
+                const userData = userInfo.data();
+                let userStores = [];
+
+                if (userData?.stores) {
+                    userStores = userData?.stores;
+                }
+                console.log(userStores);
+
+                const addStoreRef = doc(collection(db, 'cart'));
+                await transaction.set(addStoreRef, {
+                    "storeName": name,
+                    "desired": [],
+                    "sharedWith": [user.uid]
+                });
+                console.log(addStoreRef.id);
+
+                userStores.push(addStoreRef.id);
+
+                await transaction.update(userDocRef, {
+                    "stores": userStores
+                })
 
             })
         } catch (err) {
             console.log(err)
         }
+
+        // try {
+        //     console.log(name);
+        //     await addDoc(collection(db, 'cart'), {
+        //         "storeName": name,
+        //         "desired": []
+
+        //     })
+        // } catch (err) {
+        //     console.log(err)
+        // }
     }
 
     const handleViewItemList = (id) => {
@@ -39,7 +78,7 @@ const StoreList = props => {
 
     return (
         <>
-            <AddStore onAddStore={addNewStore} />
+            <AddStore onAddStore={handleAddNewStore} />
             <ViewStore list={storeList} onViewItemList={handleViewItemList} />
         </>
     )

@@ -14,12 +14,12 @@ const SignIn = () => {
         password: '',
     });
     const [user, loading, error] = useAuthState(auth);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (user) navigate('/cart')
-    })
+    }, [navigate, user]);
 
-    const navigate = useNavigate();
 
     const handleUpdateField = e => {
         setData({
@@ -29,8 +29,10 @@ const SignIn = () => {
     }
 
     const handleOnSubmit = async (e) => {
+        e.preventDefault();
         try {
-            await signInWithEmailAndPassword(auth, data.username, data.password)
+            const userDoc = await signInWithEmailAndPassword(auth, data.username, data.password);
+            console.log(userDoc);
         } catch (err) {
             console.error(err);
             alert(err.message);

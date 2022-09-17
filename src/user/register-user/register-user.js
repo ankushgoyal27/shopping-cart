@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import Col from "react-bootstrap/esm/Col";
 import Container from "react-bootstrap/esm/Container";
@@ -27,10 +27,13 @@ const RegisterUser = () => {
         try {
             const res = await createUserWithEmailAndPassword(auth, data.username, data.password);
             const user = res.user;
-            await addDoc(collection(db, "users"), {
+
+            const adminRef = doc(db, "users", user.uid);
+            await setDoc(adminRef, {
                 uid: user.uid,
                 authProvider: "local",
-                email: data.username
+                email: data.username,
+                stores: []
             });
         } catch (err) {
             console.error(err);
