@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, addDoc, query, onSnapshot, doc, runTransaction, where, getDocs, getDoc, documentId } from 'firebase/firestore';
+import { collection, query, onSnapshot, doc, runTransaction, where, documentId } from 'firebase/firestore';
 import AddStore from "./add-store/add-store";
 import ViewStore from "./view-store/view-store";
 import { auth, db } from "../../firebaseConfig";
@@ -8,7 +8,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 const StoreList = props => {
 
     const [storeList, setStoreList] = useState([]);
-    const [user, loading, error] = useAuthState(auth);
+    const [user] = useAuthState(auth);
 
     useEffect(() => {
         //if (user?.stores) {
@@ -28,7 +28,7 @@ const StoreList = props => {
 
         //const userDocRef = doc(db, "user", user.uid);
         try {
-            const newStore = await runTransaction(db, async (transaction) => {
+            await runTransaction(db, async (transaction) => {
                 //const userDoc = await transaction.get(userDocRef);
                 const userDocRef = doc(db, "users", user.uid);
                 const userInfo = await transaction.get(userDocRef);

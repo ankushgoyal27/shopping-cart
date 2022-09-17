@@ -14,7 +14,7 @@ const Cart = () => {
         setStoreView(view);
     }
 
-    const [user, loading, error] = useAuthState(auth);
+    const [user] = useAuthState(auth);
 
     const navigate = useNavigate();
 
