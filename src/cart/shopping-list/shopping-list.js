@@ -13,7 +13,7 @@ const ShoppingList = props => {
     useEffect(() => {
         const fetchData = async () => {
 
-            const docRef = doc(db, "cart", props.itemList.id);
+            const docRef = doc(db, "stores", props.itemList.id);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
@@ -31,7 +31,7 @@ const ShoppingList = props => {
 
     const addItemInList = async (item) => {
         try {
-            const docRef = doc(db, "cart", props.itemList.id);
+            const docRef = doc(db, "stores", props.itemList.id);
             await updateDoc(docRef, {
 
                 "desired": arrayUnion({
@@ -53,7 +53,7 @@ const ShoppingList = props => {
         try {
             setStatus(false);
             const data = storeData.desired[index];
-            const docRef = doc(db, "cart", props.itemList.id);
+            const docRef = doc(db, "stores", props.itemList.id);
             await updateDoc(docRef, {
 
                 "desired": arrayRemove(data)

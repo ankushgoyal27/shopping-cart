@@ -12,7 +12,7 @@ const StoreList = props => {
 
     useEffect(() => {
         //if (user?.stores) {
-        const q = query(collection(db, 'cart'),
+        const q = query(collection(db, 'stores'),
             where(documentId(), "in", ["WQzLSIVVfSItBIARFQbU", "AFdvE1AF27Zj0VTjoR1r"]))
         onSnapshot(q, (querySnapshot) => {
             setStoreList(querySnapshot.docs.map(doc => ({
@@ -24,51 +24,34 @@ const StoreList = props => {
     }, [])
 
     const handleAddNewStore = async (name) => {
-
-
-        //const userDocRef = doc(db, "user", user.uid);
         try {
             await runTransaction(db, async (transaction) => {
-                //const userDoc = await transaction.get(userDocRef);
-                const userDocRef = doc(db, "users", user.uid);
-                const userInfo = await transaction.get(userDocRef);
-                const userData = userInfo.data();
-                let userStores = [];
+                const userStoresRef = doc(db, "userStores", user.email);
+                const userStoresInfo = await transaction.get(userStoresRef);
 
-                if (userData?.stores) {
-                    userStores = userData?.stores;
+                let userStores = [];
+                if (userStoresInfo?.ids) {
+                    userStores = userStoresInfo?.ids;
                 }
                 console.log(userStores);
 
-                const addStoreRef = doc(collection(db, 'cart'));
+                const addStoreRef = doc(collection(db, 'stores'));
                 await transaction.set(addStoreRef, {
                     "storeName": name,
                     "desired": [],
-                    "sharedWith": [user.uid]
+                    "sharedWith": [user.email]
                 });
                 console.log(addStoreRef.id);
 
                 userStores.push(addStoreRef.id);
-
-                await transaction.update(userDocRef, {
-                    "stores": userStores
+                await transaction.update(userStoresRef, {
+                    "ids": userStores
                 })
 
             })
         } catch (err) {
             console.log(err)
         }
-
-        // try {
-        //     console.log(name);
-        //     await addDoc(collection(db, 'cart'), {
-        //         "storeName": name,
-        //         "desired": []
-
-        //     })
-        // } catch (err) {
-        //     console.log(err)
-        // }
     }
 
     const handleViewItemList = (id) => {

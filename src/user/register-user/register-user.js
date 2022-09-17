@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, runTransaction } from "firebase/firestore";
 import { useState } from "react";
 import Col from "react-bootstrap/esm/Col";
 import Container from "react-bootstrap/esm/Container";
@@ -28,17 +28,23 @@ const RegisterUser = () => {
             const res = await createUserWithEmailAndPassword(auth, data.username, data.password);
             const user = res.user;
 
-            const adminRef = doc(db, "users", user.uid);
-            await setDoc(adminRef, {
-                uid: user.uid,
-                authProvider: "local",
-                email: data.username,
-                stores: []
-            });
+            const adminRef = doc(db, "profile", data.username);
+            const userStoresRef = doc(db, "userStores", data.username);
+
+            await runTransaction(db, async (transaction) => {
+                await transaction.set(adminRef, {
+                    uid: user.uid,
+                    authProvider: "local",
+                    email: data.username,
+                })
+                await transaction.set(userStoresRef, {
+                    "ids": []
+                })
+            })
         } catch (err) {
             console.error(err);
             alert(err.message);
-        } console.log(data);
+        }
     }
 
     return (
