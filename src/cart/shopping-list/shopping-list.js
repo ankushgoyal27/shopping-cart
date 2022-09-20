@@ -31,6 +31,7 @@ const ShoppingList = props => {
 
     const addItemInList = async (item) => {
         try {
+            setStatus(false);
             const docRef = doc(db, "stores", props.itemList.id);
             await updateDoc(docRef, {
 
@@ -43,7 +44,7 @@ const ShoppingList = props => {
                     date: new Date()
                 })
 
-            })
+            }).then(() => setStatus(true));
         } catch (err) {
             console.log(err)
         }

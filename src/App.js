@@ -8,7 +8,6 @@ import User from './user/user';
 function App() {
   return (
     <div className="App">
-      <h1>Welcome to Shopping Cart! </h1>
       <Routes>
         <Route path="/" element={<User />} />
         <Route path="signin" element={<SignIn />} />
