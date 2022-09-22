@@ -1,29 +1,14 @@
 import * as React from 'react';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, runTransaction } from "firebase/firestore";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { auth, db } from "../../firebaseConfig";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Avatar, Box, Button, Checkbox, Container, CssBaseline, FormControlLabel, Grid, TextField, Typography } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+const theme = createTheme();
 
 const RegisterUser = () => {
-
-    // const [data, setData] = useState({
-    //     firstName: '',
-    //     lastName: '',
-    //     username: '',
-    //     password: '',
-    // });
-    const theme = createTheme();
-
-    // const handleUpdateField = e => {
-    //     setData({
-    //         ...data,
-    //         [e.target.name]: e.target.value
-    //     })
-    // }
 
     const handleOnSubmit = async (e) => {
         e.preventDefault();
@@ -141,7 +126,6 @@ const RegisterUser = () => {
                         </Grid>
                     </Box>
                 </Box>
-                {/* <Copyright sx={{ mt: 5 }} /> */}
             </Container>
         </ThemeProvider>
 
