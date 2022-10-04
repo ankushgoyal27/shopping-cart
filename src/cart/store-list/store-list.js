@@ -1,9 +1,22 @@
+import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+
 import { useEffect, useState } from "react";
 import { collection, query, onSnapshot, doc, runTransaction, where, documentId, getDoc } from 'firebase/firestore';
 import AddStore from "./add-store/add-store";
 import ViewStore from "./view-store/view-store";
 import { auth, db } from "../../firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
+import Grid from '@mui/material/Unstable_Grid2';
+
+const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+}));
 
 const StoreList = props => {
 
@@ -53,8 +66,6 @@ const StoreList = props => {
                     "desired": [],
                     "sharedWith": [user.email]
                 });
-                console.log(addStoreRef.id);
-
                 userStores.push(addStoreRef.id);
                 await transaction.update(userStoresRef, {
                     "ids": userStores
@@ -67,15 +78,26 @@ const StoreList = props => {
     }
 
     const handleViewItemList = (id) => {
+        setStatus(false);
         props.onStoreItemView(storeList.filter(item => item.id === id)[0]);
-
     }
 
     return (
-        <>
-            <AddStore onAddStore={handleAddNewStore} />
-            <ViewStore list={storeList} onViewItemList={handleViewItemList} />
-        </>
+        <React.Fragment>
+            <Grid container spacing={2}>
+                <Grid xs={12} md={12}>
+                    <Item>
+                        <AddStore onAddStore={handleAddNewStore} />
+                    </Item>
+                </Grid>
+
+                <Grid xs={12} md={12}>
+                    <Item>
+                        <ViewStore list={storeList} onViewItemList={handleViewItemList} />
+                    </Item>
+                </Grid>
+            </Grid>
+        </React.Fragment>
     )
 }
 

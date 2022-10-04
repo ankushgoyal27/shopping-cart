@@ -19,16 +19,12 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Logout from '@mui/icons-material/Logout';
-import AddIcon from '@mui/icons-material/Add';
-
 import { mainListItems } from './list-item';
-import { Fab, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
 
 const drawerWidth = 240;
@@ -97,9 +93,7 @@ const Cart = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (user) {
-            console.log(JSON.stringify(user.uid))
-        } else {
+        if (!user) {
             navigate('/signin')
         };
     }, [user, navigate])
@@ -186,27 +180,12 @@ const Cart = () => {
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        <Grid container spacing={3}>
-                            <Grid item xs={12}>
-                                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    {!storeView.hasOwnProperty('id') && <StoreList onStoreItemView={storeItemView} />}
-                                    {storeView.hasOwnProperty('id') && <ShoppingList itemList={storeView} />}
-                                </Paper>
-                            </Grid>
-                        </Grid>
-
+                        {!storeView.hasOwnProperty('id') && <StoreList onStoreItemView={storeItemView} />}
+                        {storeView.hasOwnProperty('id') && <ShoppingList itemList={storeView} />}
                     </Container>
-                    <Fab size="medium" color="secondary" aria-label="add">
-                        <AddIcon />
-                    </Fab>
                 </Box>
             </Box>
         </ThemeProvider>
-        // <>
-        //     <button type="button" onClick={handleLogout}>Logout</button>
-        //     {!storeView.hasOwnProperty('id') && <StoreList onStoreItemView={storeItemView} />}
-        //     {storeView.hasOwnProperty('id') && <ShoppingList itemList={storeView} />}
-        // </>
     )
 }
 
